@@ -115,7 +115,7 @@ public class TwitterScraper {
                 BufferedReader br = new BufferedReader(new InputStreamReader(connection.inputStream, StandardCharsets.UTF_8));
                 timelines = search(br, order, writeToIndex, writeToBackend);
             } catch (IOException e) {
-            	Log.getLog().warn(e);
+                Log.getLog().warn(e);
             } finally {
                 connection.close();
             }
@@ -147,7 +147,7 @@ public class TwitterScraper {
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
             timelines = search(br, order, writeToIndex, writeToBackend);
         } catch (IOException e) {
-        	Log.getLog().warn(e);
+            Log.getLog().warn(e);
         } finally {
             if (timelines == null) timelines = new Timeline[]{new Timeline(order), new Timeline(order)};
         }
@@ -249,8 +249,9 @@ public class TwitterScraper {
                 String image_url = new prop(input, p, "data-image-url").value;
                 if (!image_url.endsWith(".jpg") && !image_url.endsWith(".png")) {
                     System.out.println("strange image url: " + image_url);
+                } else {
+                    images.add(image_url);
                 }
-                images.add(image_url);
                 continue;
             }
             // get images
@@ -260,20 +261,29 @@ public class TwitterScraper {
                     String image_url = input.substring(p + 22, q);
                     if (!image_url.endsWith(".jpg") && !image_url.endsWith(".png")) {
                         System.out.println("strange image url: " + image_url);
+                    } else {
+                        images.add(image_url);
                     }
-                    images.add(image_url);
                 }
                 continue;
             }
             // we have two opportunities to get video thumbnails == more images; images in the presence of video content should be treated as thumbnail for the video
             if ((p = input.indexOf("class=\"animated-gif-thumbnail\"")) > 0) {
                 String image_url = new prop(input, 0, "src").value;
-                images.add(image_url);
+                if (!image_url.endsWith(".gif")) {
+                    System.out.println("strange image url: " + image_url);
+                } else {
+                    images.add(image_url);
+                }
                 continue;
             }
             if ((p = input.indexOf("class=\"animated-gif\"")) > 0) {
                 String image_url = new prop(input, p, "poster").value;
-                images.add(image_url);
+                if (!image_url.endsWith(".gif")) {
+                    System.out.println("strange image url: " + image_url);
+                } else {
+                    images.add(image_url);
+                }
                 continue;
             }
             if ((p = input.indexOf("<source video-src")) >= 0 && input.indexOf("type=\"video/") > p) {
@@ -496,7 +506,7 @@ public class TwitterScraper {
                 if (this.writeToBackend) DAO.outgoingMessages.transmitMessage(this, this.user);
                 //DAO.log("TwitterTweet [" + this.id_str + "] transmit  after " + (System.currentTimeMillis() - start) + "ms");
             } catch (Throwable e) {
-            	Log.getLog().warn(e);
+                Log.getLog().warn(e);
             } finally {
                 this.ready.release(1000);
             }
@@ -529,7 +539,7 @@ public class TwitterScraper {
                     continue;
                 }
             } catch (Throwable e) {
-            	Log.getLog().warn(e);
+                Log.getLog().warn(e);
                 break;
             }
             try {
@@ -550,7 +560,7 @@ public class TwitterScraper {
                     continue;
                 }
             } catch (Throwable e) {
-            	Log.getLog().warn(e);
+                Log.getLog().warn(e);
                 break;
             }
             try {
@@ -561,7 +571,7 @@ public class TwitterScraper {
                     continue;
                 }
             } catch (Throwable e) {
-            	Log.getLog().warn(e);
+                Log.getLog().warn(e);
                 break;
             }
             try {
@@ -572,7 +582,7 @@ public class TwitterScraper {
                     continue;
                 }
             } catch (Throwable e) {
-            	Log.getLog().warn(e);
+                Log.getLog().warn(e);
                 break;
             }
             break;
